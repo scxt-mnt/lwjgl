@@ -13,6 +13,13 @@ import static org.lwjgl.opengl.GL11.*;
 
 public class Main {
     public static void main(String[] args) {
+        float[] vertices = {
+            0.5f, -0.5f, 1f, 0, 0, 1f, // RIGHT BOTTOM
+           -0.5f, -0.5f, 1f, 0, 0, 1f, // BOTTOM LEFT
+            0.0f,  0.5f, 1f, 0, 0, 1f  // MID TOP
+        };
+
+
         if(!glfwInit()){
             throw new IllegalStateException("failed to execute glfw");
         }
