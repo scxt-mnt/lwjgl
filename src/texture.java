@@ -1,25 +1,25 @@
-import java.io.IOException;
 import java.nio.IntBuffer;
-
-import org.lwjgl.opengl.EXTABGR;
-import org.lwjgl.system.MemoryStack;
+import org.lwjgl.system.MemoryUtil;
 import java.nio.ByteBuffer;
-
 import static org.lwjgl.opengl.GL11.*;
-
 import static org.lwjgl.stb.STBImage.stbi_load;
-
 public class texture {
 
     private int textureId = 0;
 
-    public texture(String fileName){
-        try(MemoryStack stacks = MemoryStack.stackPush()){
-            IntBuffer width = stacks.mallocInt(1);
-            IntBuffer height = stacks.mallocInt(1);
-            IntBuffer channels = stacks.mallocInt(1);
 
-            ByteBuffer image = stbi_load(fileName, width, height, channels, 4);
+    public texture(String fileName){
+
+        IntBuffer  width = MemoryUtil.memAllocInt(1);
+        IntBuffer  height = MemoryUtil.memAllocInt(1);
+        IntBuffer  channels = MemoryUtil.memAllocInt(1);
+
+        ByteBuffer image = stbi_load(fileName, width, height, channels, 4);
+
+        if(image == null){
+            throw new IllegalStateException("no image found");
+        }
+
 
             textureId = glGenTextures();
             glBindTexture(GL_TEXTURE_2D, textureId);
@@ -40,13 +40,19 @@ public class texture {
                     GL_UNSIGNED_BYTE,
                     image
             );
-        }catch(Exception e){
 
-        }
+
+
+            if(image != null){
+                MemoryUtil.memFree(image);
+            }
+            MemoryUtil.memFree(width);
+            MemoryUtil.memFree(height);
+            MemoryUtil.memFree(channels);
 
 
     }
-    public int getTextureIdId(){
+    public int getTextureId(){
         return textureId;
     };
 

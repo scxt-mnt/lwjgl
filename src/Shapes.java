@@ -1,29 +1,30 @@
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.FloatBuffer;
 
+import static org.lwjgl.opengl.ARBVertexArrayObject.glBindVertexArray;
+import static org.lwjgl.opengl.ARBVertexArrayObject.glGenVertexArrays;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL11C.GL_FLOAT;
-import static org.lwjgl.opengl.GL15C.*;
-import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
-import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
+
+import static org.lwjgl.opengl.GL20.*;
 
 public class Shapes {
+    private int vertexCount;
     private int vboId;
+
+
     public Shapes(float[] shape){
 
+        // creates id
         vboId = glGenBuffers();
+        // bind the id to vertex format
         glBindBuffer(GL_ARRAY_BUFFER, vboId);
-
-        // make an memory java version
+        // make an memory
         FloatBuffer shapeBuffer = MemoryUtil.memAllocFloat(shape.length);
-
-        // putting the coordinates to shapeBuffer
-        shapeBuffer.put(shape).flip();
-
-        // uploading vertices
+        // uploads the vertices to gpu
         glBufferData(GL_ARRAY_BUFFER, shapeBuffer, GL_STATIC_DRAW);
-
 
 
         glEnableVertexAttribArray(0);
@@ -49,5 +50,19 @@ public class Shapes {
 
         // also clears memory
         MemoryUtil.memFree(shapeBuffer);
+
+        vertexCount = shape.length/6;
+    }
+
+    public void render() {
+        glBindBuffer(GL_ARRAY_BUFFER, vboId);
+        glEnableVertexAttribArray(0);
+        glEnableVertexAttribArray(1);
+
+        glDrawArrays(GL_TRIANGLES, 0 , vertexCount );
+
+        glDisableVertexAttribArray(0);
+        glDisableVertexAttribArray(1);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
 }
