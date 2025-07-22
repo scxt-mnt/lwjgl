@@ -3,6 +3,7 @@ import org.lwjgl.system.MemoryUtil;
 
 import java.nio.FloatBuffer;
 
+
 import static org.lwjgl.opengl.ARBVertexArrayObject.glBindVertexArray;
 import static org.lwjgl.opengl.ARBVertexArrayObject.glGenVertexArrays;
 import static org.lwjgl.opengl.GL11.*;
@@ -13,36 +14,44 @@ import static org.lwjgl.opengl.GL20.*;
 public class Shapes {
     private int vertexCount;
     private int vboId;
+    private int vaoId;
 
 
     public Shapes(float[] shape){
 
-        // creates id
+        // generate an id
         vboId = glGenBuffers();
-        // bind the id to vertex format
+        vaoId = glGenVertexArrays();
+
+        // make an purpose
         glBindBuffer(GL_ARRAY_BUFFER, vboId);
-        // make an memory
+        glBindVertexArray(vaoId);
+
+        // make a storage
         FloatBuffer shapeBuffer = MemoryUtil.memAllocFloat(shape.length);
-        // uploads the vertices to gpu
+        // putting the data to buffer and flipping
+        shapeBuffer.put(shape).flip();
+        // uploading vartex to gpu
         glBufferData(GL_ARRAY_BUFFER, shapeBuffer, GL_STATIC_DRAW);
 
-
+        // array index 0
         glEnableVertexAttribArray(0);
         glVertexAttribPointer(
-            0, // id
-            2, // how many items on coordinates ex. 0.5f, 0.5f
-            GL_FLOAT, // data type
-            false,  // false for raw numbers
-             6 * Float.BYTES,  // how many bytes for next vertex items
-            0   // where to start to read a byte '0' means 0 byte to read
+                0,
+                2,
+                GL_FLOAT,
+                false,
+                24,
+                0
         );
+        glEnableVertexAttribArray(1);
         glVertexAttribPointer(
                 1,
                 4,
-                GL_FLOAT,
-                false,
-                6 * Float.BYTES,
-                2 * Float.BYTES
+                    GL_FLOAT,
+                    false,
+                    24,
+                    8
         );
 
         // unbind the vertices for clearing up
@@ -55,14 +64,9 @@ public class Shapes {
     }
 
     public void render() {
-        glBindBuffer(GL_ARRAY_BUFFER, vboId);
-        glEnableVertexAttribArray(0);
-        glEnableVertexAttribArray(1);
-
-        glDrawArrays(GL_TRIANGLES, 0 , vertexCount );
-
-        glDisableVertexAttribArray(0);
-        glDisableVertexAttribArray(1);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindVertexArray(vaoId);
+        glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+        glBindVertexArray(0);
     }
+
 }

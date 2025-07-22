@@ -39,7 +39,7 @@ public class Main {
         texture textureId = new texture("assets/texture.png");
 
         glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, textureId.getTextureIdId());
+        glBindTexture(GL_TEXTURE_2D, textureId.getTextureId());
 
         long lastTime = System.nanoTime();
 
