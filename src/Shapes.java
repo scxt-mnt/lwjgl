@@ -1,72 +1,69 @@
-import org.lwjgl.opengl.GL11;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.FloatBuffer;
 
-
 import static org.lwjgl.opengl.ARBVertexArrayObject.glBindVertexArray;
 import static org.lwjgl.opengl.ARBVertexArrayObject.glGenVertexArrays;
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL11C.GL_FLOAT;
-
-import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL15C.*;
+import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
+import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
 
 public class Shapes {
-    private int vertexCount;
-    private int vboId;
     private int vaoId;
+    private int vboId;
+    private int vertexCounts;
 
-
-    public Shapes(float[] shape){
-
-        // generate an id
-        vboId = glGenBuffers();
+    public Shapes(float[] vertices) {
+        // generate id
         vaoId = glGenVertexArrays();
+        vboId = glGenBuffers();
+        vertexCounts = vertices.length/6;
 
-        // make an purpose
-        glBindBuffer(GL_ARRAY_BUFFER, vboId);
+        // bindings
         glBindVertexArray(vaoId);
+        glBindBuffer(GL_ARRAY_BUFFER, vboId);
 
-        // make a storage
-        FloatBuffer shapeBuffer = MemoryUtil.memAllocFloat(shape.length);
-        // putting the data to buffer and flipping
-        shapeBuffer.put(shape).flip();
-        // uploading vartex to gpu
+        // making storage
+        FloatBuffer shapeBuffer = MemoryUtil.memAllocFloat(vertices.length);
+
+        // store data
+        shapeBuffer.put(vertices).flip();
+
         glBufferData(GL_ARRAY_BUFFER, shapeBuffer, GL_STATIC_DRAW);
 
-        // array index 0
+        // vao Area
         glEnableVertexAttribArray(0);
         glVertexAttribPointer(
                 0,
                 2,
                 GL_FLOAT,
                 false,
-                24,
+                6 * Float.BYTES,
                 0
         );
         glEnableVertexAttribArray(1);
         glVertexAttribPointer(
                 1,
                 4,
-                    GL_FLOAT,
-                    false,
-                    24,
-                    8
-        );
+                GL_FLOAT,
+                false,
+                6 * Float.BYTES,
+                2 * Float.BYTES
 
-        // unbind the vertices for clearing up
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
+       );
+        // clearing up
 
-        // also clears memory
         MemoryUtil.memFree(shapeBuffer);
 
-        vertexCount = shape.length/6;
-    }
-
-    public void render() {
-        glBindVertexArray(vaoId);
-        glDrawArrays(GL_TRIANGLES, 0, vertexCount);
         glBindVertexArray(0);
-    }
 
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+
+    }
+    public void render(){
+        glBindVertexArray(vaoId);
+        glDrawArrays(GL_TRIANGLES, 0, vertexCounts);
+        glBindVertexArray(0);
+    };
 }
