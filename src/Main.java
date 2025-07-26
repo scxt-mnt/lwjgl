@@ -3,7 +3,6 @@ import org.lwjgl.glfw.GLFWVidMode;
 
 import static org.lwjgl.glfw.GLFW.*;
 import org.lwjgl.opengl.GL;
-import org.lwjgl.openvr.Texture;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -18,15 +17,15 @@ public class Main {
     private static int fragShader;
     private static int shaderProgram;
 
-     public static String loadFile(String filepath) throws IOException {
-        return new String(Files.readAllBytes(Paths.get(filepath)));
-     };
+    public static String loadFile(String filepath) throws IOException {
+      return new String(Files.readAllBytes(Paths.get(filepath)));
+    };
 
     public static void main(String[] args)  {
         float[] vertices = {
-            0.5f, -0.5f, 1f, 0, 0, 1f, // RIGHT BOTTOM
-           -0.5f, -0.5f, 1f, 0, 0, 1f, // LEFT BOTTOM
-            0.0f,  0.5f, 1f, 0, 0, 1f  // MID TOP
+                0.5f, -0.5f, 1f, 0f, 0f,   // pos(x,y) + color(r,g,b)
+                -0.5f, -0.5f, 0f, 1f, 0f,
+                0.0f,  0.5f, 0f, 0f, 1f
         };
 
 
@@ -47,22 +46,30 @@ public class Main {
 
         glfwSetWindowPos(window, (vidMode.width() - 640) / 2, (vidMode.height() - 400) / 2 );
 
+            glfwMakeContextCurrent(window);
+            GL.createCapabilities();
 
-        glfwMakeContextCurrent(window);
-        GL.createCapabilities();
-        Shapes tria = new Shapes(vertices);
+            Shapes tria = new Shapes(vertices);
 
         try {
             vertexShader = glCreateShader(GL_VERTEX_SHADER);
-            glShaderSource(vertexShader, loadFile("./vertexShader.glsl"));
+            glShaderSource(vertexShader, loadFile("vertexShader.glsl"));
             glCompileShader(vertexShader);
 
             fragShader = glCreateShader(GL_FRAGMENT_SHADER);
-            glShaderSource(fragShader, loadFile("./fragShader.glsl"));
+            glShaderSource(fragShader, loadFile("fragShaders.glsl"));
             glCompileShader(fragShader);
-        }catch(IOException e){
-            e.printStackTrace();
+
+                }catch(IOException e){
+                e.printStackTrace();
         }
+
+
+        shaderProgram = glCreateProgram();
+        glAttachShader(shaderProgram, vertexShader);
+        glAttachShader(shaderProgram, fragShader);
+        glLinkProgram(shaderProgram);
+        glUseProgram(shaderProgram);
 
 
 

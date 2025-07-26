@@ -17,7 +17,7 @@ public class Shapes {
         // generate id
         vaoId = glGenVertexArrays();
         vboId = glGenBuffers();
-        vertexCounts = vertices.length/6;
+        vertexCounts = vertices.length/5;
 
         // bindings
         glBindVertexArray(vaoId);
@@ -38,16 +38,16 @@ public class Shapes {
                 2,
                 GL_FLOAT,
                 false,
-                6 * Float.BYTES,
+                5 * Float.BYTES,
                 0
         );
         glEnableVertexAttribArray(1);
         glVertexAttribPointer(
                 1,
-                4,
+                3,
                 GL_FLOAT,
                 false,
-                6 * Float.BYTES,
+                5 * Float.BYTES,
                 2 * Float.BYTES
 
        );
