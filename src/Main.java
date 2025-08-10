@@ -25,13 +25,8 @@ public class Main {
         float[] vertices = {
                 0.5f, -0.5f, 1f, 0f, 0f,   // pos(x,y) + color(r,g,b)
                 -0.5f, -0.5f, 0f, 1f, 0f,
-                0.0f,  0.5f, 0f, 0f, 1f
+                0.0f, 0.5f, 0f, 0f, 1f
         };
-
-
-
-
-
 
         if(!glfwInit()){
             throw new IllegalStateException("failed to execute glfw");
@@ -65,18 +60,35 @@ public class Main {
         }
 
 
+
         shaderProgram = glCreateProgram();
         glAttachShader(shaderProgram, vertexShader);
         glAttachShader(shaderProgram, fragShader);
         glLinkProgram(shaderProgram);
-        glUseProgram(shaderProgram);
 
 
 
+        int uniform = glGetUniformLocation(shaderProgram, "offset");
+        double lastTime = glfwGetTime();
+        float x = 0;
+        float y = 0;
 
-        while(!glfwWindowShouldClose(window)){
+         while(!glfwWindowShouldClose(window)){
                 glfwPollEvents();
 
+                double currentTime = glfwGetTime();
+                float deltaTime = (float)(currentTime - lastTime);
+                lastTime = currentTime;
+
+
+                if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) y += deltaTime;
+                if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) y -= deltaTime;
+                if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) x += deltaTime;
+                if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) x -= deltaTime;
+
+                glClear(GL_COLOR_BUFFER_BIT);
+                glUseProgram(shaderProgram);
+                glUniform2f(uniform, x, y);
                 tria.render();
 
 

@@ -9,10 +9,9 @@ import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
 import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
 
 public class Shapes {
-    private int vaoId;
     private int vboId;
+    private int vaoId;
     private int vertexCounts;
-
     public Shapes(float[] vertices) {
         // generate id
         vaoId = glGenVertexArrays();
@@ -50,7 +49,7 @@ public class Shapes {
                 5 * Float.BYTES,
                 2 * Float.BYTES
 
-       );
+        );
         // clearing up
 
         MemoryUtil.memFree(shapeBuffer);
