@@ -7,6 +7,7 @@ import org.lwjgl.opengl.GL;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.sql.SQLOutput;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL20.*;
@@ -32,7 +33,7 @@ public class Main {
             throw new IllegalStateException("failed to execute glfw");
         }
         glfwWindowHint(GLFW_VISIBLE, 1);
-        long window = glfwCreateWindow(640, 400, "glfw my Game", 0, 0);
+        long window = glfwCreateWindow(640, 400, "game", 0, 0);
         if(window == 0){
             System.out.println("failed to create window");
         }
@@ -69,17 +70,23 @@ public class Main {
 
 
         int uniform = glGetUniformLocation(shaderProgram, "offset");
+        int scaleUniform = glGetUniformLocation(shaderProgram, "scale");
         double lastTime = glfwGetTime();
         float x = 0;
         float y = 0;
+        float[] scale = {1.0f};
 
-         while(!glfwWindowShouldClose(window)){
+        glfwSetScrollCallback(window, (win, xOffSet, yOffSet) -> {
+            scale[0] += 0.1f * yOffSet;
+        });
+
+
+        while(!glfwWindowShouldClose(window)){
                 glfwPollEvents();
 
                 double currentTime = glfwGetTime();
                 float deltaTime = (float)(currentTime - lastTime);
                 lastTime = currentTime;
-
 
                 if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) y += deltaTime;
                 if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) y -= deltaTime;
@@ -89,6 +96,7 @@ public class Main {
                 glClear(GL_COLOR_BUFFER_BIT);
                 glUseProgram(shaderProgram);
                 glUniform2f(uniform, x, y);
+                glUniform1f(scaleUniform, scale[0]);
                 tria.render();
 
 
